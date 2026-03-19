@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 
 const saltRounds = parseInt(process.env.SALT, 10);
 
+//register function
 const register = async (req, res) => {
   try {
     const { user_name, email, phone_number, password } = req.body;
@@ -48,6 +49,7 @@ const register = async (req, res) => {
   }
 };
 
+//login function
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -74,6 +76,13 @@ const login = async (req, res) => {
       return res.status(403).json({
         success: false,
         message: "password is incorrect",
+      });
+    }
+
+    if (user.is_deleted === 1) {
+      return res.status(403).json({
+        success: false,
+        message: "the user was deleted please contact with support",
       });
     }
 
@@ -106,4 +115,90 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+//delete user function
+const deleteUserById = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const query = `update users set is_deleted = 1 where id = $1`;
+
+    const data = [id];
+
+    const result = await pool.query(query, data);
+
+    return res.status(200).json({
+      success: true,
+      message: `user with id : ${id} was deleted successfully`,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "server error",
+      error: err.message,
+    });
+  }
+};
+
+//get users function
+const getAllUsers = async (req, res) => {
+  try {
+    const query = `select * from users`;
+
+    const result = await pool.query(query);
+
+    return res.status(201).json({
+      success: true,
+      message: `fetching all users`,
+      users: result.rows,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "server error",
+      error: err.message,
+    });
+  }
+};
+
+//update users function
+const updateUserById = async (req, res) => {
+  try {
+    const { user_name, email, phone_number } = req.body;
+
+    const id = req.params.id;
+
+    const data = [user_name, email, phone_number, id];
+
+    const query = `
+  UPDATE users 
+  SET 
+    user_name = COALESCE($1, user_name),
+    email = COALESCE($2, email),
+    phone_number = COALESCE($3, phone_number)
+  WHERE id = $4
+  RETURNING id, user_name, email, phone_number
+`;
+
+    const result = await pool.query(query, data);
+
+    return res.status(201).json({
+      success: true,
+      message: "user updated successfully",
+      data: result.rows[0],
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "server error",
+      error: err.message,
+    });
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  deleteUserById,
+  getAllUsers,
+  updateUserById,
+};
