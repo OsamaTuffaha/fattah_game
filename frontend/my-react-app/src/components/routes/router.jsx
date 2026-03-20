@@ -6,6 +6,8 @@ import Navbar from "../navbar";
 
 import Main from "../layouts/Main";
 
+import Login from "../pages/login";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -14,6 +16,10 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <Welcome />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
       },
     ],
   },
