@@ -1,4 +1,4 @@
-import {  Navigate, useNavigate } from "react-router-dom";
+import { data, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken, setUserId } from "../features/auth/authSlice";
@@ -21,28 +21,35 @@ const Login = () => {
     try {
       const data = await loginApi(email, password);
       console.log("SUCCESS:", data);
-
+      setMessage(data.message);
 
       // خزّن البيانات
       dispatch(setToken(data.token));
-      dispatch(setUserId(data.userId));
+      dispatch(setUserId(data.id));
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
 
       // روح على الصفحة الرئيسية
-      navigate("/");
     } catch (error) {
       console.log("ERROR:", error.response?.data);
+      setMessage(error.response?.data?.message || error.message);
     }
   };
 
   // 🔥 إذا مسجل دخول، رجّعه
-  if (auth.isLoggedIn) {
-    return <Navigate to="/" />;
-  }
+  // if (auth.isLoggedIn) {
+  //   return <Navigate to="/" />;
+  // }
 
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#38598b] via-[#a2a8d3] to-[#113f67]">
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+          <h1 className="text-5xl md:text-7xl font-extrabold text-gray-800 tracking-wide">
+            فَتِّح مُخَّك
+          </h1>
           <h2 className="mt-10 text-center text-2xl font-bold text-white">
             Sign in to your account
           </h2>
@@ -87,10 +94,16 @@ const Login = () => {
 
           <p className="mt-10 text-center text-sm text-white">
             Not a member?{" "}
-            <a className="font-semibold text-green-400 hover:text-green-300">
+            <a
+              onClick={() => {
+                navigate("/signup");
+              }}
+              className="font-semibold text-green-400 hover:text-green-300"
+            >
               sign up now
             </a>
           </p>
+          <p className="mt-10 text-center text-sm text-white">{message}</p>
         </div>
       </div>
     </div>

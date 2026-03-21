@@ -39,14 +39,22 @@ const register = async (req, res) => {
       user: result.rows[0],
     });
   } catch (err) {
-    console.log("REGISTER ERROR:", err);
+  console.log("REGISTER ERROR:", err);
 
+  // unique constraint (email duplicate)
+  if (err.code === "23505") {
     return res.status(409).json({
       success: false,
-      message: "Email already exists or DB error",
-      error: err.message,
+      message: "Email already exists ❌",
     });
   }
+
+  // أي خطأ ثاني
+  return res.status(500).json({
+    success: false,
+    message: "Server error ⚠️",
+  });
+}
 };
 
 //login function
@@ -73,7 +81,7 @@ const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(403).json({
+      return res.status(400).json({
         success: false,
         message: "password is incorrect",
       });

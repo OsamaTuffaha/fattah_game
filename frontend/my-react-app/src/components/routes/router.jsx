@@ -8,6 +8,8 @@ import Main from "../layouts/Main";
 
 import Login from "../pages/login";
 
+import SignUp from "../pages/signup";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -20,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <Login />,
+      },
+      {
+        path: "/signUp",
+        element: <SignUp />,
       },
     ],
   },
