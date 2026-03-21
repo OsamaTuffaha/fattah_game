@@ -12,6 +12,7 @@ const SignUp = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -21,6 +22,10 @@ const SignUp = () => {
 
       console.log("success", data);
       setMessage(data.message || "Account created successfully ✅");
+      setSuccess(true);
+      setTimeout(() => {
+        nav("/login");
+      }, 1000);
     } catch (error) {
       console.log("error", error);
       setMessage(error.response?.data?.message || error.message);
@@ -58,7 +63,7 @@ const SignUp = () => {
             </label>
             <input
               onChange={(e) => setPhoneNumber(e.target.value)}
-              type="number"
+              type="text"
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your phone number"
             />
@@ -75,11 +80,6 @@ const SignUp = () => {
           </div>
 
           <button
-            // onClick={() => {
-            //   setTimeout(() => {
-            //     nav("/login");
-            //   }, 2000);
-            // }}
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
           >

@@ -45,7 +45,7 @@ const register = async (req, res) => {
   if (err.code === "23505") {
     return res.status(409).json({
       success: false,
-      message: "Email already exists ❌",
+      message: "Email or Phone already exists ❌",
     });
   }
 
