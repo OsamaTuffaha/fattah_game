@@ -4,6 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 function Navbar() {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const userId = localStorage.getItem('userId')
+  const dashButton = () =>{
+    if (isLoggedIn && userId == 1){
+      return <>Admin Dashboard</>
+    }
+  }
   return (
     <div className="bg-gray-900 text-white px-6 py-4 flex justify-between items-center">
       <h1 className="text-xl font-bold">فَتِّح مُخَّك</h1>
@@ -23,8 +29,8 @@ function Navbar() {
         >
           {isLoggedIn ? "Logout" : "Login"}
         </a>
-        <a href="#" className="hover:text-gray-300">
-          Contact
+        <a href="/dashboard" className="hover:text-gray-300">
+          {dashButton()}
         </a>
       </div>
     </div>

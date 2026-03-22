@@ -10,6 +10,8 @@ import Login from "../pages/login";
 
 import SignUp from "../pages/signup";
 
+import Dashboard from "../pages/dashbord";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -26,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "/signUp",
         element: <SignUp />,
+      },
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
       },
     ],
   },
