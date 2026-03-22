@@ -6,16 +6,14 @@ const GamePage = () => {
   const location = useLocation();
 
   if (!location.state) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white bg-black">
-        No Game Data
-      </div>
-    );
+    return <div className="text-white">No Game Data</div>;
   }
 
   const { selectedCats, team1, team2 } = location.state;
 
   const [gameData, setGameData] = useState({});
+  const [score1, setScore1] = useState(0);
+  const [score2, setScore2] = useState(0);
 
   useEffect(() => {
     fetchGame();
@@ -26,11 +24,9 @@ const GamePage = () => {
       1,
       selectedCats.map((c) => c.id)
     );
-
     organizeData(data);
   };
 
-  // 🧠 ترتيب حسب النقاط
   const organizeData = (questions) => {
     const grouped = {};
 
@@ -41,7 +37,6 @@ const GamePage = () => {
       grouped[q.category_id].push(q);
     });
 
-    // 🔥 sort داخل كل كاتيجوري
     Object.keys(grouped).forEach((key) => {
       grouped[key].sort((a, b) => a.points - b.points);
     });
@@ -50,55 +45,53 @@ const GamePage = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-6 bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#1f1b3a] to-[#24243e] text-white">
       
-      {/* teams */}
-      <div className="flex justify-between max-w-6xl mx-auto mb-8 text-lg font-semibold">
-        <span>{team1}</span>
-        <span>{team2}</span>
+      {/* TITLE */}
+      <div className="text-center text-xl font-bold py-4">
+        فتح عقلك
       </div>
 
-      {/* 🔥 grid 3 columns */}
-      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        
+      {/* GRID */}
+      <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {selectedCats.map((cat) => {
           const questions = gameData[cat.id] || [];
 
           return (
             <div
               key={cat.id}
-              className="bg-white/10 p-4 rounded-xl flex items-center justify-between"
+              className="bg-white/5 rounded-2xl p-3 flex items-center justify-center gap-3 border border-white/10"
             >
               
-              {/* 🔹 left */}
-              <div className="flex flex-col gap-3">
+              {/* LEFT */}
+              <div className="flex flex-col gap-2">
                 {[0, 1, 2].map((i) => (
                   <button
                     key={i}
-                    className="bg-purple-600 px-4 py-2 rounded hover:bg-purple-700"
+                    className="bg-white/10 hover:bg-purple-600 transition px-4 py-1 rounded-full text-sm"
                   >
-                    {questions[i]?.points || "-"}
+                    {questions[i]?.points || [200, 400, 600][i]}
                   </button>
                 ))}
               </div>
 
-              {/* 🔹 category */}
+              {/* CATEGORY */}
               <div className="text-center">
                 <img
                   src={cat.image}
-                  className="w-20 h-20 object-cover rounded-xl mx-auto mb-2"
+                  className="w-28 h-28 object-cover rounded-xl mx-auto"
                 />
-                <p className="text-sm">{cat.cat_name}</p>
+                <p className="text-xs mt-1">{cat.cat_name}</p>
               </div>
 
-              {/* 🔹 right */}
-              <div className="flex flex-col gap-3">
+              {/* RIGHT */}
+              <div className="flex flex-col gap-2">
                 {[0, 1, 2].map((i) => (
                   <button
                     key={i}
-                    className="bg-purple-600 px-4 py-2 rounded hover:bg-purple-700"
+                    className="bg-white/10 hover:bg-purple-600 transition px-4 py-1 rounded-full text-sm"
                   >
-                    {questions[i + 3]?.points || "-"}
+                    {questions[i + 3]?.points || [200, 400, 600][i]}
                   </button>
                 ))}
               </div>
@@ -106,6 +99,60 @@ const GamePage = () => {
             </div>
           );
         })}
+      </div>
+
+      {/* TEAMS */}
+      <div className="fixed bottom-0 w-full bg-black/30 backdrop-blur-md p-4 flex justify-between border-t border-white/10">
+        
+        {/* TEAM 1 */}
+        <div className="flex flex-col items-center w-1/2">
+          <div className="text-sm mb-2">{team1}</div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setScore1(score1 - 100)}
+              className="bg-purple-600 hover:bg-purple-700 w-8 h-8 rounded-full"
+            >
+              -
+            </button>
+
+            <div className="bg-white/10 px-6 py-1 rounded-xl text-lg font-bold">
+              {score1}
+            </div>
+
+            <button
+              onClick={() => setScore1(score1 + 100)}
+              className="bg-purple-600 hover:bg-purple-700 w-8 h-8 rounded-full"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        {/* TEAM 2 */}
+        <div className="flex flex-col items-center w-1/2">
+          <div className="text-sm mb-2">{team2}</div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setScore2(score2 - 100)}
+              className="bg-purple-600 hover:bg-purple-700 w-8 h-8 rounded-full"
+            >
+              -
+            </button>
+
+            <div className="bg-white/10 px-6 py-1 rounded-xl text-lg font-bold">
+              {score2}
+            </div>
+
+            <button
+              onClick={() => setScore2(score2 + 100)}
+              className="bg-purple-600 hover:bg-purple-700 w-8 h-8 rounded-full"
+            >
+              +
+            </button>
+          </div>
+        </div>
 
       </div>
 
