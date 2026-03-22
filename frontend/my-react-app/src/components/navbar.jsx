@@ -15,7 +15,7 @@ function Navbar() {
       <h1 className="text-xl font-bold">فَتِّح مُخَّك</h1>
 
       <div className="space-x-4">
-        <a href="/" className="hover:text-gray-300">
+        <a href="/home" className="hover:text-gray-300">
           Home
         </a>
         <a

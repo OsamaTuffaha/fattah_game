@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getUsers, deleteUser, updateUser } from "../services/dashboardApi";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
   const [users, setUsers] = useState([]);
   const [editUserId, setEditUserId] = useState(null);
   const [formData, setFormData] = useState({
@@ -21,8 +24,6 @@ const Dashboard = () => {
   }, []);
 
   const handleDelete = async (id) => {
-   
-
     await deleteUser(id);
     fetchUsers();
   };
@@ -53,8 +54,27 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Admin Dashboard</h1>
+    <div className="min-h-screen bg-blue-500 p-6 ">
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Admin Dashboard
+      </h1>
+
+      <div className="max-w-3xl mx-auto mb-4 flex justify-end">
+        <button
+          onClick={() => navigate("/addcategory")}
+          className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600"
+        >
+          ➕ Add Category
+        </button>
+      </div>
+      <div className="max-w-3xl mx-auto mb-4 flex justify-end">
+        <button
+          onClick={() => navigate("/addquestions")}
+          className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600"
+        >
+          ➕ Add Questions
+        </button>
+      </div>
 
       <div className="max-w-3xl mx-auto space-y-4">
         {users.map((user) => (
@@ -63,7 +83,9 @@ const Dashboard = () => {
             className="bg-white p-4 rounded-xl shadow-md flex flex-col gap-3"
           >
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-500">ID: {user.id}</span>
+              <span className="text-sm text-gray-500">
+                ID: {user.id}
+              </span>
 
               <span
                 className={`text-xs px-2 py-1 rounded-full ${
@@ -72,7 +94,9 @@ const Dashboard = () => {
                     : "bg-green-100 text-green-600"
                 }`}
               >
-                {user.is_deleted === 1 ? "Deleted ❌" : "Active ✅"}
+                {user.is_deleted === 1
+                  ? "Deleted ❌"
+                  : "Active ✅"}
               </span>
             </div>
 
@@ -116,9 +140,15 @@ const Dashboard = () => {
             ) : (
               <>
                 <div>
-                  <p className="font-semibold text-lg">{user.user_name}</p>
-                  <p className="text-gray-600">{user.email}</p>
-                  <p className="text-gray-600">{user.phone_number}</p>
+                  <p className="font-semibold text-lg">
+                    {user.user_name}
+                  </p>
+                  <p className="text-gray-600">
+                    {user.email}
+                  </p>
+                  <p className="text-gray-600">
+                    {user.phone_number}
+                  </p>
                 </div>
 
                 <div className="flex gap-2">
