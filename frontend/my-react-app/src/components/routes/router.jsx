@@ -10,6 +10,7 @@ import AddCategory from "../pages/addcategory";
 import AddQuestion from "../pages/addquestion";
 import GameSetup from "../pages/categoryselect";
 import GamePage from "../pages/gamepage";
+import QuestionPlay from "../pages/questionplay";
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
   {
     path: "/gamepage",
     element: <GamePage />,
+  },
+  {
+    path: "/question-play",
+    element : <QuestionPlay/>
   },
 ]);
 

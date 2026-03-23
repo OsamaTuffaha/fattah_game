@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken, setUserId } from "../features/auth/authSlice";
 import { loginApi } from "../services/loginApi";
+import icon from "../../assets/icon.png";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -47,11 +48,10 @@ const Login = () => {
     <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#38598b] via-[#a2a8d3] to-[#113f67]">
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h1 className="text-5xl md:text-7xl font-extrabold text-gray-800 tracking-wide">
-            فَتِّح مُخَّك
-          </h1>
-          <h2 className="mt-10 text-center text-2xl font-bold text-white">
-            Sign in to your account
+          <img src={icon} alt="logo" className="mx-auto h-80 mb-4" />
+
+          <h2 className="text-center text-2xl font-bold text-white">
+            تسجيل الدخول
           </h2>
         </div>
 
@@ -93,14 +93,14 @@ const Login = () => {
           </form>
 
           <p className="mt-10 text-center text-sm text-white">
-            Not a member?{" "}
+            ما عندك حساب؟{" "}
             <a
               onClick={() => {
                 navigate("/signup");
               }}
               className="font-semibold text-green-400 hover:text-green-300"
             >
-              sign up now
+              سجل الان
             </a>
           </p>
           <p className="mt-10 text-center text-sm text-white">{message}</p>

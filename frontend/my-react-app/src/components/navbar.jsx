@@ -16,7 +16,7 @@ function Navbar() {
 
       <div className="space-x-4">
         <a href="/home" className="hover:text-gray-300">
-          Home
+          {isLoggedIn ? "Home" : null}
         </a>
         <a
           onClick={() => {

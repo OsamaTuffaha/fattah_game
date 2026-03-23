@@ -1,4 +1,5 @@
 const express = require("express");
+const authentication = require('../middlewares/authentication')
 
 const upload = require("../utils/upload");
 
@@ -13,13 +14,20 @@ const {
 
 const questionRouter = express.Router();
 
-questionRouter.post("/add", upload.single("image"), createQuestion);
+questionRouter.post(
+  "/add",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "answer_image", maxCount: 1 },
+  ]),
+  createQuestion,
+);
 
-questionRouter.get("/", getQuestion);
+questionRouter.get("/", authentication,getQuestion);
 
-questionRouter.get("/category/:id", getQuestionByCategory);
+questionRouter.get("/category/:id", authentication,getQuestionByCategory);
 
-questionRouter.delete("/:id", deleteQuestion);
+questionRouter.delete("/:id", authentication,deleteQuestion);
 
 questionRouter.post("/played", markQuestionPlayed);
 

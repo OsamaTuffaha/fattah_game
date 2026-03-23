@@ -48,6 +48,9 @@ const GameSetup = () => {
           <h1 className="text-2xl md:text-3xl font-bold text-center mb-8">
             فتح مخك
           </h1>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
+            اختر ستة فئات
+          </h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
             {categories.map((cat) => {
@@ -75,7 +78,7 @@ const GameSetup = () => {
                 >
                   <img
                     src={cat.image}
-                    className="w-full h-32 md:h-40 object-cover"
+                    className="w-full h-32 md:h-80 object-cover"
                   />
 
                   <div className="text-center py-2">

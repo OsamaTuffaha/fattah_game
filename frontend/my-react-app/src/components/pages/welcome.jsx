@@ -15,7 +15,7 @@ function Welcome() {
 
         <button
           onClick={() => {
-            nav("/login");
+            nav("/Home");
           }}
           className="mt-8 px-6 py-3 bg-gray-900 text-white rounded-xl shadow-lg hover:scale-105 transition"
         >

@@ -4,15 +4,24 @@ const createQuestion = async (req, res) => {
   try {
     const { question_text, answer, points, category_id } = req.body;
 
-    const image = req.file.path;
+    const image = req.files?.image?.[0]?.path;
+    const answer_image = req.files?.answer_image?.[0]?.path;
 
     const query = `
-  INSERT INTO questions (question_text , image , answer , points, category_id) 
-  VALUES ($1 , $2 ,$3 ,$4 ,$5)
-  RETURNING *
-`;
+      INSERT INTO questions 
+      (question_text, image, answer, points, category_id, answer_image)
+      VALUES ($1,$2,$3,$4,$5,$6)
+      RETURNING *
+    `;
 
-    const data = [question_text, image, answer, points, category_id];
+    const data = [
+      question_text,
+      image,
+      answer,
+      points,
+      category_id,
+      answer_image,
+    ];
 
     const result = await pool.query(query, data);
 
@@ -22,6 +31,8 @@ const createQuestion = async (req, res) => {
       data: result.rows[0],
     });
   } catch (err) {
+    console.log(err);
+
     return res.status(500).json({
       success: false,
       message: "server error",
@@ -100,23 +111,28 @@ const getQuestionsForGame = async (req, res) => {
     const { userId, categoryIds } = req.body;
 
     const query = `
-      SELECT * FROM questions
-      WHERE category_id = ANY($1)
-      AND id NOT IN (
-        SELECT question_id FROM user_played_questions
+      SELECT q.*
+      FROM questions q
+      WHERE q.category_id = ANY($1)
+      AND q.id NOT IN (
+        SELECT question_id
+        FROM user_played_questions
         WHERE user_id = $2
       )
-      ORDER BY points ASC
+      ORDER BY q.points ASC
     `;
 
     const result = await pool.query(query, [categoryIds, userId]);
 
-    return res.json({
+    res.json({
       success: true,
       data: result.rows,
     });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
   }
 };
 const markQuestionPlayed = async (req, res) => {
