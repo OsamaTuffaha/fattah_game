@@ -6,6 +6,8 @@ const QuestionPlay = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const UserId = localStorage.getItem('userId')
+
   // 🛑 حماية
   if (!location.state) {
     return (
@@ -31,7 +33,7 @@ const QuestionPlay = () => {
   // ✅ اختيار الفريق
   const handleAnswer = async (team) => {
     try {
-      await markQuestionPlayed(1, question.id); // 👈 userId لاحقًا نربطه باللوجن
+      await markQuestionPlayed(UserId, question.id); // 👈 userId لاحقًا نربطه باللوجن
 
       navigate(-1, {
         state: {

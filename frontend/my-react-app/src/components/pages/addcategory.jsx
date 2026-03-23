@@ -94,7 +94,7 @@ const AddCategory = () => {
             <img
               src={cat.image} // لازم يرجع URL من cloudinary
               alt={cat.cat_name}
-              className="w-full h-90 object-cover"
+              className="w-full h-40 object-cover"
             />
 
             <div className="p-4 text-center">

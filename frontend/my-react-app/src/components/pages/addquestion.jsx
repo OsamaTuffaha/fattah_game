@@ -76,30 +76,21 @@ const AddQuestion = () => {
 
   return (
     <div className="min-h-screen p-6 bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white">
-
-     
-
       {/* 🧠 FORM */}
       <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl max-w-md mx-auto mb-10">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          إضافة سؤال
-        </h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">إضافة سؤال</h2>
 
         <input
           placeholder="السؤال"
           value={form.question_text}
-          onChange={(e) =>
-            setForm({ ...form, question_text: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, question_text: e.target.value })}
           className="w-full p-2 mb-3 rounded bg-white/20"
         />
 
         <input
           placeholder="الإجابة"
           value={form.answer}
-          onChange={(e) =>
-            setForm({ ...form, answer: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, answer: e.target.value })}
           className="w-full p-2 mb-3 rounded bg-white/20"
         />
 
@@ -107,18 +98,14 @@ const AddQuestion = () => {
           placeholder="النقاط"
           type="number"
           value={form.points}
-          onChange={(e) =>
-            setForm({ ...form, points: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, points: e.target.value })}
           className="w-full p-2 mb-3 rounded bg-white/20"
         />
 
         {/* 📂 SELECT */}
         <select
           value={form.category_id}
-          onChange={(e) =>
-            setForm({ ...form, category_id: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, category_id: e.target.value })}
           className="w-full p-2 mb-3 rounded-lg bg-white/20 text-white border border-white/20 focus:outline-none"
         >
           <option value="" className="text-black">
@@ -156,7 +143,10 @@ const AddQuestion = () => {
             className="hidden"
             id="imageUpload"
           />
-          <label htmlFor="imageUpload" className="block mt-2 cursor-pointer text-purple-300">
+          <label
+            htmlFor="imageUpload"
+            className="block mt-2 cursor-pointer text-purple-300"
+          >
             اختر صورة
           </label>
         </div>
@@ -187,7 +177,10 @@ const AddQuestion = () => {
             className="hidden"
             id="answerUpload"
           />
-          <label htmlFor="answerUpload" className="block mt-2 cursor-pointer text-purple-300">
+          <label
+            htmlFor="answerUpload"
+            className="block mt-2 cursor-pointer text-purple-300"
+          >
             اختر صورة الإجابة
           </label>
         </div>
@@ -199,7 +192,7 @@ const AddQuestion = () => {
           إضافة
         </button>
       </div>
-       {/* 📦 CATEGORY CARDS */}
+      {/* 📦 CATEGORY CARDS */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         {categories.map((cat) => (
           <div
@@ -230,20 +223,14 @@ const AddQuestion = () => {
             className="bg-white/10 p-4 rounded-xl flex justify-between"
           >
             <div>
-              <p className="font-bold">السؤال  : {q.question_text}</p>
+              <p className="font-bold">السؤال : {q.question_text}</p>
               <p className="text-gray-300">الجواب : {q.answer}</p>
               <p className="text-gray-300">النقاط : {q.points}</p>
 
-
-              {q.image && (
-                <img src={q.image} className="w-16 mt-2 rounded" />
-              )}
+              {q.image && <img src={q.image} className="w-16 mt-2 rounded" />}
 
               {q.answer_image && (
-                <img
-                  src={q.answer_image}
-                  className="w-12 mt-2 rounded"
-                />
+                <img src={q.answer_image} className="w-12 mt-2 rounded" />
               )}
             </div>
 
@@ -256,7 +243,6 @@ const AddQuestion = () => {
           </div>
         ))}
       </div>
-
     </div>
   );
 };

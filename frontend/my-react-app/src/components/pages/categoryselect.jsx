@@ -18,11 +18,17 @@ const GameSetup = () => {
     setCategories(res.data);
   };
 
+  // 🔥 grouping حسب الجينري
+  const groupedCategories = categories.reduce((acc, cat) => {
+    if (!acc[cat.genre]) acc[cat.genre] = [];
+    acc[cat.genre].push(cat);
+    return acc;
+  }, {});
+
   const handleSelect = (cat) => {
     const exists = selectedCats.some((c) => c.id === cat.id);
 
     if (exists) {
-      // unselect
       setSelectedCats((prev) => prev.filter((c) => c.id !== cat.id));
     } else {
       if (selectedCats.length < 6) {
@@ -30,6 +36,7 @@ const GameSetup = () => {
       }
     }
   };
+
   const handleStart = () => {
     navigate("/gamepage", {
       state: {
@@ -42,57 +49,82 @@ const GameSetup = () => {
 
   return (
     <div className="min-h-screen p-4 md:p-6 bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white">
+
+      {/* BACK */}
+      <button
+        onClick={() => navigate("/Home")}
+        className="bg-white/10 px-3 py-1 rounded-lg text-sm"
+      >
+        رجوع
+      </button>
+
       <div className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
-        {/* categories */}
+
+        {/* CATEGORIES */}
         <div className="flex-1">
-          <h1 className="text-2xl md:text-3xl font-bold text-center mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-center mb-6">
             فتح مخك
           </h1>
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
+
+          <h2 className="text-xl md:text-2xl font-bold text-center mb-8">
             اختر ستة فئات
           </h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
-            {categories.map((cat) => {
-              const isSelected = selectedCats.some((c) => c.id === cat.id);
-              const isDisabled = selectedCats.length >= 6 && !isSelected;
+          {/* 🔥 عرض حسب الجينري */}
+          {Object.keys(groupedCategories).map((genreName) => (
+            <div key={genreName} className="mb-10">
 
-              return (
-                <div
-                  key={cat.id}
-                  onClick={() => !isDisabled && handleSelect(cat)}
-                  className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-200
-                  
-                  ${
-                    isSelected
-                      ? "ring-4 ring-purple-500 scale-105 bg-white/20"
-                      : "bg-white/10"
-                  }
-                  
-                  ${
-                    isDisabled
-                      ? "opacity-30 cursor-not-allowed"
-                      : "hover:scale-105 hover:ring-2 hover:ring-white/30"
-                  }
-                  `}
-                >
-                  <img
-                    src={cat.image}
-                    className="w-full h-32 md:h-80 object-cover"
-                  />
+              {/* GENRE TITLE */}
+              <h3 className="text-lg md:text-xl font-bold mb-4 text-center text-purple-300">
+                {genreName}
+              </h3>
 
-                  <div className="text-center py-2">
-                    <p className="text-sm md:text-base font-medium">
-                      {cat.cat_name}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+              {/* GRID */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+                {groupedCategories[genreName].map((cat) => {
+                  const isSelected = selectedCats.some((c) => c.id === cat.id);
+                  const isDisabled =
+                    selectedCats.length >= 6 && !isSelected;
+
+                  return (
+                    <div
+                      key={cat.id}
+                      onClick={() => !isDisabled && handleSelect(cat)}
+                      className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-200
+                      
+                      ${
+                        isSelected
+                          ? "ring-4 ring-purple-500 scale-105 bg-white/20"
+                          : "bg-white/10"
+                      }
+                      
+                      ${
+                        isDisabled
+                          ? "opacity-30 cursor-not-allowed"
+                          : "hover:scale-105 hover:ring-2 hover:ring-white/30"
+                      }
+                      `}
+                    >
+                      <img
+                        src={cat.image}
+                        className="w-full h-40 md:h-80 object-cover"
+                      />
+
+                      <div className="text-center py-2">
+                        <p className="text-sm md:text-base font-medium">
+                          {cat.cat_name}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+            </div>
+          ))}
         </div>
 
-        {/* selected */}
+        {/* SELECTED */}
         <div className="w-full lg:w-64 bg-white/10 backdrop-blur-md p-4 rounded-xl h-fit">
           <h3 className="font-semibold mb-3 text-center">
             Selected ({selectedCats.length}/6)
@@ -115,7 +147,7 @@ const GameSetup = () => {
         </div>
       </div>
 
-      {/* teams */}
+      {/* TEAMS */}
       <div className="max-w-2xl mx-auto mt-10 bg-white/10 backdrop-blur-md p-6 rounded-2xl">
         <h2 className="text-lg md:text-xl font-semibold mb-6 text-center">
           Teams
@@ -141,12 +173,12 @@ const GameSetup = () => {
           onClick={handleStart}
           disabled={selectedCats.length < 6 || !team1 || !team2}
           className={`w-full mt-6 py-2 rounded font-semibold
-    ${
-      selectedCats.length === 6 && team1 && team2
-        ? "bg-purple-600 hover:bg-purple-700"
-        : "bg-gray-500 cursor-not-allowed"
-    }
-  `}
+            ${
+              selectedCats.length === 6 && team1 && team2
+                ? "bg-purple-600 hover:bg-purple-700"
+                : "bg-gray-500 cursor-not-allowed"
+            }
+          `}
         >
           Start Game
         </button>
