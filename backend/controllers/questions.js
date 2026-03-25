@@ -6,11 +6,15 @@ const createQuestion = async (req, res) => {
 
     const image = req.files?.image?.[0]?.path;
     const answer_image = req.files?.answer_image?.[0]?.path;
+    const audio = req.files?.audio?.[0]?.path;
+    const video = req.files?.video?.[0]?.path;
+    const answer_audio = req.files?.answer_audio?.[0]?.path;
+    const answer_video = req.files?.answer_video?.[0]?.path;
 
     const query = `
       INSERT INTO questions 
-      (question_text, image, answer, points, category_id, answer_image)
-      VALUES ($1,$2,$3,$4,$5,$6)
+      (question_text, image, answer,  category_id, points, answer_image,  video, audio, answer_audio, answer_video)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
       RETURNING *
     `;
 
@@ -18,9 +22,13 @@ const createQuestion = async (req, res) => {
       question_text,
       image,
       answer,
-      points,
       category_id,
+      points,
       answer_image,
+      video,
+      audio,
+      answer_audio,
+      answer_video,
     ];
 
     const result = await pool.query(query, data);
@@ -30,15 +38,21 @@ const createQuestion = async (req, res) => {
       message: "question added successfully",
       data: result.rows[0],
     });
+    console.log(JSON.stringify(err, null, 2));
   } catch (err) {
-    console.log(err);
+  console.log("FULL ERROR:", err);
 
-    return res.status(500).json({
-      success: false,
-      message: "server error",
-      error: err.message,
-    });
+  if (err.response) {
+    console.log("Cloudinary Error:", err.response.data);
   }
+
+  return res.status(500).json({
+    success: false,
+    message: "server error",
+    error: err.message,
+    details: err.response?.data || err,
+  });
+}
 };
 
 const getQuestion = async (req, res) => {

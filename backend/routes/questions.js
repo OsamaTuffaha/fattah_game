@@ -19,9 +19,14 @@ questionRouter.post(
   upload.fields([
     { name: "image", maxCount: 1 },
     { name: "answer_image", maxCount: 1 },
+    { name: "audio", maxCount: 1 },
+    { name: "video", maxCount: 1 },
+    { name: "answer_audio", maxCount: 1 },
+    { name: "answer_video", maxCount: 1 },
   ]),
   createQuestion,
 );
+
 
 questionRouter.get("/", authentication,getQuestion);
 

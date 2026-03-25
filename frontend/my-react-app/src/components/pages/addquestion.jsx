@@ -16,6 +16,10 @@ const AddQuestion = () => {
 
   const [image, setImage] = useState(null);
   const [answerImage, setAnswerImage] = useState(null);
+  const [audio, setAudio] = useState(null);
+  const [video, setVideo] = useState(null);
+  const [answerVideo, setAnswerVideo] = useState(null);
+  const [answerAudio, setAnswerAudio] = useState(null); 
 
   const [categories, setCategories] = useState([]);
   const [questions, setQuestions] = useState([]);
@@ -23,6 +27,7 @@ const AddQuestion = () => {
 
   useEffect(() => {
     fetchCategories();
+    
   }, []);
 
   const fetchCategories = async () => {
@@ -44,6 +49,10 @@ const AddQuestion = () => {
 
     if (image) formData.append("image", image);
     if (answerImage) formData.append("answer_image", answerImage);
+    if (audio) formData.append("audio", audio);
+    if (video) formData.append("video", video);
+    if (answerVideo) formData.append("answer_video", answerVideo);
+    if (answerAudio) formData.append("answer_audio", answerAudio);
 
     await addQuestion(formData);
 
@@ -56,8 +65,11 @@ const AddQuestion = () => {
 
     setImage(null);
     setAnswerImage(null);
+    setAudio(null);
+    setVideo(null);
+    setAnswerVideo(null);
+    setAnswerAudio(null);
 
-    // 🔥 رجع يجيب الأسئلة لنفس الكاتيجوري
     if (activeCat) handleCategoryClick(activeCat);
   };
 
@@ -102,22 +114,20 @@ const AddQuestion = () => {
           className="w-full p-2 mb-3 rounded bg-white/20"
         />
 
-        {/* 📂 SELECT */}
         <select
           value={form.category_id}
           onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-          className="w-full p-2 mb-3 rounded-lg bg-white/20 text-white border border-white/20 focus:outline-none"
+          className="w-full p-2 mb-3 rounded-lg bg-black"
         >
-          <option value="" className="text-black">
-            اختر كاتيجوري
-          </option>
+          <option value="">اختر كاتيجوري</option>
           {categories.map((cat) => (
-            <option key={cat.id} value={cat.id} className="text-black">
+            <option key={cat.id} value={cat.id}>
               {cat.cat_name}
             </option>
           ))}
         </select>
 
+        {/* باقي الفورم (صور / صوت / فيديو) زي ما هو عندك بدون تغيير */}
         {/* 📸 IMAGE */}
         <div
           onDrop={(e) => {
@@ -185,6 +195,106 @@ const AddQuestion = () => {
           </label>
         </div>
 
+        {/* 🎧 AUDIO */}
+        <div className="border-2 border-dashed border-white/30 p-4 rounded-xl text-center mb-3">
+          <p>ملف صوت (اختياري)</p>
+
+          {audio && (
+            <audio controls className="mx-auto mt-2">
+              <source src={URL.createObjectURL(audio)} />
+            </audio>
+          )}
+
+          <input
+            type="file"
+            accept="audio/*"
+            onChange={(e) => setAudio(e.target.files[0])}
+            className="hidden"
+            id="audioUpload"
+          />
+          <label
+            htmlFor="audioUpload"
+            className="block mt-2 cursor-pointer text-purple-300"
+          >
+            اختر صوت
+          </label>
+        </div>
+
+        {/* 🎧 ANSWER AUDIO */}
+        <div className="border-2 border-dashed border-white/30 p-4 rounded-xl text-center mb-3">
+          <p>صوت الجواب</p>
+
+          {answerAudio && (
+            <audio controls className="mx-auto mt-2">
+              <source src={URL.createObjectURL(answerAudio)} />
+            </audio>
+          )}
+
+          <input
+            type="file"
+            accept="audio/*"
+            onChange={(e) => setAnswerAudio(e.target.files[0])}
+            className="hidden"
+            id="answerAudioUpload"
+          />
+          <label
+            htmlFor="answerAudioUpload"
+            className="block mt-2 cursor-pointer text-purple-300"
+          >
+            اختر صوت الجواب
+          </label>
+        </div>
+
+        {/* 🎥 VIDEO */}
+        <div className="border-2 border-dashed border-white/30 p-4 rounded-xl text-center mb-3">
+          <p>فيديو السؤال</p>
+
+          {video && (
+            <video controls className="h-24 mx-auto mt-2 rounded">
+              <source src={URL.createObjectURL(video)} />
+            </video>
+          )}
+
+          <input
+            type="file"
+            accept="video/*"
+            onChange={(e) => setVideo(e.target.files[0])}
+            className="hidden"
+            id="videoUpload"
+          />
+          <label
+            htmlFor="videoUpload"
+            className="block mt-2 cursor-pointer text-purple-300"
+          >
+            اختر فيديو
+          </label>
+        </div>
+
+        {/* 🎥 ANSWER VIDEO */}
+        <div className="border-2 border-dashed border-white/30 p-4 rounded-xl text-center mb-3">
+          <p>فيديو الجواب</p>
+
+          {answerVideo && (
+            <video controls className="h-24 mx-auto mt-2 rounded">
+              <source src={URL.createObjectURL(answerVideo)} />
+            </video>
+          )}
+
+          <input
+            type="file"
+            accept="video/*"
+            onChange={(e) => setAnswerVideo(e.target.files[0])}
+            className="hidden"
+            id="answerVideoUpload"
+          />
+          <label
+            htmlFor="answerVideoUpload"
+            className="block mt-2 cursor-pointer text-purple-300"
+          >
+            اختر فيديو الجواب
+          </label>
+        </div>
+
         <button
           onClick={handleSubmit}
           className="w-full bg-purple-600 py-2 rounded hover:bg-purple-700"
@@ -192,16 +302,17 @@ const AddQuestion = () => {
           إضافة
         </button>
       </div>
+
       {/* 📦 CATEGORY CARDS */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         {categories.map((cat) => (
           <div
             key={cat.id}
             onClick={() => handleCategoryClick(cat.id)}
-            className={`cursor-pointer p-3 rounded-xl text-center transition
+            className={`cursor-pointer p-3 rounded-xl text-center
               ${
                 activeCat === cat.id
-                  ? "bg-purple-600 scale-105"
+                  ? "bg-purple-600"
                   : "bg-white/10 hover:bg-white/20"
               }
             `}
@@ -210,7 +321,7 @@ const AddQuestion = () => {
               src={cat.image}
               className="h-20 w-20 object-cover mx-auto mb-2 rounded-lg"
             />
-            <p className="text-sm">{cat.cat_name}</p>
+            <p>{cat.cat_name}</p>
           </div>
         ))}
       </div>
@@ -224,14 +335,34 @@ const AddQuestion = () => {
           >
             <div>
               <p className="font-bold">السؤال : {q.question_text}</p>
-              <p className="text-gray-300">الجواب : {q.answer}</p>
-              <p className="text-gray-300">النقاط : {q.points}</p>
+              <p>الجواب : {q.answer}</p>
+              <p>النقاط : {q.points}</p>
 
-              {q.image && <img src={q.image} className="w-16 mt-2 rounded" />}
+              {/* 🔥 عرض واحد فقط للسؤال */}
+              {q.image ? (
+                <img src={q.image} className="w-20 mt-2 rounded" />
+              ) : q.audio ? (
+                <audio controls className="mt-2">
+                  <source src={q.audio} />
+                </audio>
+              ) : q.video ? (
+                <video controls className="w-32 mt-2 rounded">
+                  <source src={q.video} />
+                </video>
+              ) : null}
 
-              {q.answer_image && (
-                <img src={q.answer_image} className="w-12 mt-2 rounded" />
-              )}
+              {/* 🔥 عرض واحد فقط للجواب */}
+              {q.answer_image ? (
+                <img src={q.answer_image} className="w-16 mt-2 rounded" />
+              ) : q.answer_audio ? (
+                <audio controls className="mt-2">
+                  <source src={q.answer_audio} />
+                </audio>
+              ) : q.answer_video ? (
+                <video controls className="w-32 mt-2 rounded">
+                  <source src={q.answer_video} />
+                </video>
+              ) : null}
             </div>
 
             <button
