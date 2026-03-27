@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setToken, setUserId } from "../features/auth/authSlice";
 import { loginApi } from "../services/loginApi";
 import icon from "../../assets/icon.png";
+import MIND from "../../assets/MIND.png"
+import "./login.css";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -45,18 +47,18 @@ const Login = () => {
   // }
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#38598b] via-[#a2a8d3] to-[#113f67]">
-      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="min-h-[100dvh] flex items-center justify-center bg-gradient-to-r from-[#C08552] to-[#8C5A3C] login-wrapper ">
+      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 login-card">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img src={icon} alt="logo" className="mx-auto h-80 mb-4" />
+          <img src={MIND} alt="logo" className="mx-auto h-80 mb-4 login-logo" />
 
-          <h2 className="text-center text-2xl font-bold text-white">
+          <h2  className=" text-center text-2xl font-bold text-white login-title">
             تسجيل الدخول
           </h2>
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-6 login-form">
             {/* EMAIL */}
             <div>
               <label className="block text-sm font-medium text-gray-100">
@@ -66,7 +68,7 @@ const Login = () => {
                 type="email"
                 required
                 onChange={(e) => setEmail(e.target.value)}
-                className="block w-full rounded-md bg-white/5 px-3 py-2 text-white"
+                className="block w-full rounded-md bg-white/5 px-3 py-2 text-white login-input"
               />
             </div>
 
@@ -79,14 +81,14 @@ const Login = () => {
                 type="password"
                 required
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full rounded-md bg-white/5 px-3 py-2 text-white"
+                className="block w-full rounded-md bg-white/5 px-3 py-2 text-white login-input"
               />
             </div>
 
             {/* BUTTON */}
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-2 text-white hover:bg-indigo-400"
+              className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-2 text-white hover:bg-indigo-400 login-button"
             >
               Sign in
             </button>

@@ -45,102 +45,162 @@ const GameSetup = () => {
         team2,
       },
     });
+    localStorage.removeItem("playedQuestions");
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-6 bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white">
-
+    <div className="min-h-screen p-4 md:p-6 bg-gradient-to-r from-[#C08552] to-[#8C5A3C] text-white">
       {/* BACK */}
       <button
         onClick={() => navigate("/Home")}
-        className="bg-white/10 px-3 py-1 rounded-lg text-sm"
+        className="mb-4 px-4 py-1.5 rounded-xl bg-white/10 backdrop-blur-lg border border-white/10 hover:bg-white/20 transition"
       >
         رجوع
       </button>
 
-      <div className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
-
+      <div className="flex flex-col xl:flex-row gap-6 max-w-7xl mx-auto ">
         {/* CATEGORIES */}
         <div className="flex-1">
-          <h1 className="text-2xl md:text-3xl font-bold text-center mb-6">
-            فتح مخك
-          </h1>
-
-          <h2 className="text-xl md:text-2xl font-bold text-center mb-8">
+          <h2 className="text-lg md:text-xl text-center mb-10 text-gray-300">
             اختر ستة فئات
           </h2>
 
-          {/* 🔥 عرض حسب الجينري */}
           {Object.keys(groupedCategories).map((genreName) => (
-            <div key={genreName} className="mb-10">
-
+            <div
+              key={genreName}
+              className="
+    px-6 py-3
+    rounded-2xl
+    bg-white/5 backdrop-blur-xl
+    border border-white/10
+    shadow-[0_0_30px_rgba(239,233,227,0.8)]
+    mb-10
+  "
+            >
               {/* GENRE TITLE */}
-              <h3 className="text-lg md:text-xl font-bold mb-4 text-center text-purple-300">
+              <h3
+                className="
+      text-lg md:text-xl font-extrabold tracking-wider
+      bg-white
+      bg-clip-text text-transparent
+      flex items-center justify-center
+    "
+              >
                 {genreName}
               </h3>
 
+              <div className="relative mt-3 w-32 h-[2px]">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500 to-transparent blur-sm"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400 to-transparent"></div>
+              </div>
+
               {/* GRID */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 gap-5 md:gap-6 ">
                 {groupedCategories[genreName].map((cat) => {
                   const isSelected = selectedCats.some((c) => c.id === cat.id);
-                  const isDisabled =
-                    selectedCats.length >= 6 && !isSelected;
+                  const isDisabled = selectedCats.length >= 6 && !isSelected;
 
                   return (
                     <div
                       key={cat.id}
                       onClick={() => !isDisabled && handleSelect(cat)}
-                      className={`relative cursor-pointer rounded-xl overflow-hidden transition-all duration-200
-                      
+                      className={`
+                      group relative cursor-pointer rounded-2xl overflow-hidden
+                      transition-all duration-300
+
                       ${
                         isSelected
-                          ? "ring-4 ring-purple-500 scale-105 bg-white/20"
-                          : "bg-white/10"
+                          ? "ring-2 ring-[rgba(239,233,227,0.6)] scale-[1.08] shadow-[0_0_30px_rgba(239,233,227,0.8)]"
+                          : "bg-white/5"
                       }
-                      
+
                       ${
                         isDisabled
                           ? "opacity-30 cursor-not-allowed"
-                          : "hover:scale-105 hover:ring-2 hover:ring-white/30"
+                          : "hover:scale-[1.05] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                       }
-                      `}
+                    `}
                     >
+                      {/* IMAGE */}
                       <img
                         src={cat.image}
-                        className="w-full h-40 md:h-80 object-cover"
+                        className="w-full h-40 md:h-60 object-cover group-hover:brightness-75 transition"
                       />
 
-                      <div className="text-center py-2">
-                        <p className="text-sm md:text-base font-medium">
+                      {/* OVERLAY */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+                      {/* TITLE */}
+                      <div
+                        className="
+  px-3 py-3
+  bg-white/10 backdrop-blur-lg
+  border-t border-white/10
+  text-center
+  group-hover:bg-white/10
+  transition
+"
+                      >
+                        <p
+                          className="
+    text-sm md:text-base font-bold tracking-wide
+    bg-[rgba(239,233,227,1)]
+    bg-clip-text text-transparent
+  "
+                        >
                           {cat.cat_name}
                         </p>
                       </div>
+
+                      {/* GLOW EFFECT */}
+                      {isSelected && (
+                        <div className="absolute inset-0 border-2 border-purple-400 rounded-2xl animate-pulse" />
+                      )}
                     </div>
                   );
                 })}
               </div>
-
             </div>
           ))}
         </div>
 
         {/* SELECTED */}
-        <div className="w-full lg:w-64 bg-white/10 backdrop-blur-md p-4 rounded-xl h-fit">
-          <h3 className="font-semibold mb-3 text-center">
+        <div
+          className="
+        w-full xl:w-72
+        bg-white/5 backdrop-blur-xl
+        border border-white/10
+        p-4 rounded-2xl
+        h-fit
+
+        flex xl:flex-col
+        overflow-x-auto xl:overflow-visible
+        gap-3
+      "
+        >
+          <h3 className="font-semibold text-center w-full xl:mb-3">
             Selected ({selectedCats.length}/6)
           </h3>
 
-          <div className="space-y-2">
+          <div className="flex xl:flex-col gap-3 w-full">
             {selectedCats.map((cat) => (
               <div
                 key={cat.id}
-                className="flex items-center gap-2 bg-white/10 p-2 rounded"
+                className="
+                flex items-center gap-3
+                bg-white/10
+                border border-white/10
+                px-3 py-2
+                rounded-xl
+                min-w-[160px]
+                hover:bg-white/20 transition
+              "
               >
                 <img
                   src={cat.image}
-                  className="w-10 h-10 object-cover rounded"
+                  className="w-10 h-10 object-cover rounded-lg"
                 />
-                <span className="text-sm">{cat.cat_name}</span>
+                <span className="text-sm font-medium">{cat.cat_name}</span>
               </div>
             ))}
           </div>
@@ -148,39 +208,51 @@ const GameSetup = () => {
       </div>
 
       {/* TEAMS */}
-      <div className="max-w-2xl mx-auto mt-10 bg-white/10 backdrop-blur-md p-6 rounded-2xl">
-        <h2 className="text-lg md:text-xl font-semibold mb-6 text-center">
+      <div className="max-w-2xl mx-auto mt-12 bg-rgba(121, 14, 14, 0.6) backdrop-blur-xl border border-white/10 p-6 rounded-3xl shadow-[0_0_30px_rgba(168,85,247,0.2)]">
+        <h2 className="text-xl font-bold mb-6 text-center text-rgba(121, 14, 14, 0.6)">
           Teams
         </h2>
 
         <div className="flex flex-col md:flex-row gap-4">
           <input
-            placeholder="Team 1"
+            placeholder="اسم الفريق الاول"
             value={team1}
             onChange={(e) => setTeam1(e.target.value)}
-            className="w-full p-2 rounded bg-white/20"
+            className="
+            w-full p-3 rounded-xl
+            bg-white/10 border border-white
+            focus:outline-none focus:ring-2 focus:ring-purple-500
+            placeholder:text-white-400
+          "
           />
 
           <input
-            placeholder="Team 2"
+            placeholder="اسم الفريق الثاني"
             value={team2}
             onChange={(e) => setTeam2(e.target.value)}
-            className="w-full p-2 rounded bg-white/20"
+            className="
+             w-full p-3 rounded-xl
+            bg-white/10 border border-white
+            focus:outline-none focus:ring-2 focus:ring-purple-500
+            placeholder:text-white-400
+          "
           />
         </div>
 
         <button
           onClick={handleStart}
           disabled={selectedCats.length < 6 || !team1 || !team2}
-          className={`w-full mt-6 py-2 rounded font-semibold
-            ${
-              selectedCats.length === 6 && team1 && team2
-                ? "bg-purple-600 hover:bg-purple-700"
-                : "bg-gray-500 cursor-not-allowed"
-            }
-          `}
+          className={`
+          w-full mt-8 py-3 rounded-xl font-bold tracking-wide transition-all duration-300
+
+          ${
+            selectedCats.length === 6 && team1 && team2
+              ? "bg-gradient-to-r from-purple-600 to-pink-500 hover:scale-[1.03] shadow-[0_0_20px_rgba(236,72,153,0.6)]"
+              : "bg-gray-600 cursor-not-allowed opacity-60"
+          }
+        `}
         >
-          Start Game
+          ابدأ اللعبة
         </button>
       </div>
     </div>

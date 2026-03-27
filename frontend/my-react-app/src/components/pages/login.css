@@ -1,0 +1,42 @@
+@media (min-width: 700px) and (max-width: 900px) {
+
+  /* الكونتينر الرئيسي */
+  .login-wrapper {
+    padding: 20px !important;
+  }
+
+  /* الكارد */
+  .login-card {
+    max-width: 420px !important;
+    margin: auto !important;
+  }
+
+  /* الصورة */
+  .login-logo {
+    height: 140px !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* العنوان */
+  .login-title {
+    font-size: 20px !important;
+  }
+
+  /* الفورم */
+  .login-form {
+    gap: 12px !important;
+  }
+
+  /* الانبوت */
+  .login-input {
+    padding: 8px !important;
+    font-size: 14px !important;
+  }
+
+  /* الزر */
+  .login-button {
+    padding: 8px !important;
+    font-size: 14px !important;
+  }
+
+}

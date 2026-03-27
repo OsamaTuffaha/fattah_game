@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getGameQuestions, markQuestionPlayed } from "../services/gamepageApi";
+import "../layouts/mobile.css";
 
 const GamePage = () => {
   const location = useLocation();
@@ -22,17 +23,22 @@ const GamePage = () => {
   const [time, setTime] = useState(60);
 
   const [zoomImg, setZoomImg] = useState(null);
-
-  const userId = localStorage.getItem("userId");
+  const [showWinner, setShowWinner] = useState(false);
 
   useEffect(() => {
     fetchGame();
   }, []);
+  useEffect(() => {
+    const saved = localStorage.getItem("playedQuestions");
+    if (saved) {
+      setPlayedQuestions(JSON.parse(saved));
+    }
+  }, []);
 
   const fetchGame = async () => {
     const data = await getGameQuestions(
-      userId,
-      selectedCats.map((c) => c.id)
+      1,
+      selectedCats.map((c) => c.id),
     );
 
     organizeData(data);
@@ -52,6 +58,7 @@ const GamePage = () => {
     setGameData(grouped);
   };
 
+  // ⏱ TIMER
   useEffect(() => {
     if (time > 0 && currentQ && !showAnswer) {
       const timer = setTimeout(() => setTime(time - 1), 1000);
@@ -59,12 +66,27 @@ const GamePage = () => {
     }
   }, [time, currentQ, showAnswer]);
 
-  const handleAnswer = async (team) => {
-    await markQuestionPlayed(userId, currentQ.id);
+  // 🔥 CHECK END GAME
+  useEffect(() => {
+    const totalQuestions = selectedCats.length * 6;
 
-    setPlayedQuestions((prev) =>
-      prev.includes(currentQ.id) ? prev : [...prev, currentQ.id]
-    );
+    const saved = localStorage.getItem("playedQuestions");
+    const parsed = saved ? JSON.parse(saved) : [];
+
+    if (parsed.length === totalQuestions) {
+      setShowWinner(true);
+    }
+  }, [playedQuestions, selectedCats]);
+
+  const handleAnswer = async (team) => {
+    await markQuestionPlayed(1, currentQ.id);
+
+    setPlayedQuestions((prev) => {
+      const key = `${currentQ.category_id}-${currentQ.points}-${currentQ.side}`;
+      const updated = [...prev, key];
+      localStorage.setItem("playedQuestions", JSON.stringify(updated));
+      return updated;
+    });
 
     if (team === team1) {
       setScore1((prev) => prev + currentQ.points);
@@ -73,7 +95,20 @@ const GamePage = () => {
     }
 
     handleClose();
-    fetchGame();
+  };
+
+  // 🔥 NO ANSWER
+  const handleNoAnswer = async () => {
+    await markQuestionPlayed(1, currentQ.id);
+
+    setPlayedQuestions((prev) => {
+      const key = `${currentQ.category_id}-${currentQ.points}-${currentQ.side}`;
+      const updated = [...prev, key];
+      localStorage.setItem("playedQuestions", JSON.stringify(updated));
+      return updated;
+    });
+
+    handleClose();
   };
 
   const handleClose = () => {
@@ -85,12 +120,11 @@ const GamePage = () => {
   const isGameFinished = Object.keys(gameData).length === 0;
 
   return (
-    <div className="min-h-screen pb-28 bg-gradient-to-br from-[#0f0c29] via-[#1f1b3a] to-[#24243e] text-white overflow-hidden">
-
+    <div className="min-h-screen pb-28 bg-gradient-to-r from-[#C08552] to-[#8C5A3C]  text-white overflow-hidden">
       {/* HEADER */}
       <div className="flex justify-between items-center p-3">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/gamesetup")}
           className="bg-white/10 px-3 py-1 rounded-lg text-sm"
         >
           رجوع
@@ -109,17 +143,32 @@ const GamePage = () => {
               key={cat.id}
               className="bg-white/5 rounded-xl p-2 flex items-center justify-center gap-2"
             >
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 ">
                 {[200, 400, 600].map((p, i) => {
-                  const q = questions.find((q) => q.points === p);
+                  const q = questions.filter((q) => q.points === p)[0]; // LEFT
+                  const key = `${q?.category_id}-${q?.points}-left`;
+                  const isPlayed = playedQuestions.includes(key);
 
                   return (
                     <button
                       key={i}
-                      disabled={!q}
-                      onClick={() => q && setCurrentQ(q)}
+                      disabled={isPlayed}
+                      onClick={() => {
+                        if (!q) return; // 🔥 أهم سطر
+
+                        const key = `${cat.id}-${p}-left`;
+
+                        if (!playedQuestions.includes(key)) {
+                          setCurrentQ({
+                            ...q,
+                            side: "left",
+                            points: p,
+                            category_id: cat.id,
+                          });
+                        }
+                      }}
                       className={`px-3 py-1 rounded text-xs
-                        ${!q ? "bg-gray-500" : "bg-white/10"}
+                        ${isPlayed ? "bg-gray-500" : "bg-white/10"}
                       `}
                     >
                       {p}
@@ -130,20 +179,35 @@ const GamePage = () => {
 
               <img
                 src={cat.image}
-                className="w-24 sm:w-28 md:w-36 h-32 sm:h-40 md:h-48 object-cover rounded-lg"
+                className="w-24 h-32 object-cover rounded-lg"
               />
 
               <div className="flex flex-col gap-1">
                 {[200, 400, 600].map((p, i) => {
-                  const q = questions.filter((q) => q.points === p)[1];
+                  const q = questions.filter((q) => q.points === p)[1]; // RIGHT
+                  const key = `${q?.category_id}-${q?.points}-right`;
+                  const isPlayed = playedQuestions.includes(key);
 
                   return (
                     <button
                       key={i}
-                      disabled={!q}
-                      onClick={() => q && setCurrentQ(q)}
+                      disabled={isPlayed}
+                      onClick={() => {
+                        if (!q) return; // 🔥 أهم سطر
+
+                        const key = `${cat.id}-${p}-right`;
+
+                        if (!playedQuestions.includes(key)) {
+                          setCurrentQ({
+                            ...q,
+                            side: "right",
+                            points: p,
+                            category_id: cat.id,
+                          });
+                        }
+                      }}
                       className={`px-3 py-1 rounded text-xs
-                        ${!q ? "bg-gray-500" : "bg-white/10"}
+                        ${isPlayed ? "bg-gray-500" : "bg-white/10"}
                       `}
                     >
                       {p}
@@ -156,93 +220,309 @@ const GamePage = () => {
         })}
       </div>
 
-      {/* POPUP */}
+      {/* QUESTION POPUP */}
       {currentQ && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center z-50 p-2">
-          <div className="relative w-full max-w-md md:max-w-xl bg-white/10 rounded-xl p-3 text-center">
-
-            <button
-              onClick={handleClose}
-              className="absolute top-2 right-2 bg-white/10 w-7 h-7 rounded-full"
-            >
-              ✕
-            </button>
-
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-2 question-modal question-modal_land">
+          <div className="relative w-full max-w-md bg-gradient-to-r from-[#C08552] to-[#8C5A3C] rounded-2xl p-3 text-center shadow-xl question-card-land  ">
             {!showAnswer ? (
               <>
-                <div className="text-xl md:text-3xl mb-2">{time}</div>
+                <div className="text-2xl mb-2 text-white font-bold ">
+                  {time}
+                </div>
 
-                {/* ✅ عرض واحد فقط */}
-                {currentQ.image ? (
-                  <img
-                    src={currentQ.image}
-                    onClick={() => setZoomImg(currentQ.image)}
-                    className="w-full h-40 md:h-56 object-contain mb-2 rounded cursor-pointer"
-                  />
-                ) : currentQ.audio ? (
-                  <audio controls className="w-full mb-2">
-                    <source src={currentQ.audio} />
-                  </audio>
-                ) : currentQ.video ? (
-                  <video controls className="w-full h-56 mb-2 rounded">
-                    <source src={currentQ.video} />
-                  </video>
-                ) : null}
+                {/* MEDIA (QUESTION) */}
+                {(currentQ?.image || currentQ?.video) && (
+                  <div className="flex justify-center items-center w-full h-[220px] md:h-[260px] bg-black/20 rounded-xl overflow-hidden mb-2">
+                    {currentQ?.image && (
+                      <img
+                        src={currentQ.image}
+                        onClick={() => setZoomImg(currentQ.image)}
+                        className="w-full h-full object-contain cursor-pointer"
+                      />
+                    )}
 
-                <h2 className="text-sm md:text-lg mb-3">
-                  {currentQ.question_text}
-                </h2>
+                    {currentQ?.video && (
+                      <video
+                        controls
+                        src={currentQ.video}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
+                  </div>
+                )}
+
+                {currentQ?.audio && <audio controls src={currentQ.audio} />}
+
+                {/* QUESTION BOX */}
+                <div
+                  className="
+            mt-3 p-4
+            bg-gradient-to-r from-[#fdf6f0] to-[#f8ede3]
+            text-gray-800
+            rounded-2xl
+            border border-gray-200
+            shadow-md
+          "
+                >
+                  <h2 className="text-base md:text-lg font-semibold leading-relaxed">
+                    {currentQ?.question_text}
+                  </h2>
+                </div>
 
                 <button
                   onClick={() => setShowAnswer(true)}
-                  className="bg-purple-600 px-4 py-1 rounded"
+                  className="
+              mt-4 px-5 py-2
+              rounded-xl font-semibold
+              bg-white text-black
+              hover:scale-105 active:scale-95
+              transition
+            "
                 >
-                  الجواب
+                  عرض الجواب
                 </button>
               </>
             ) : (
               <>
-                {/* ✅ عرض واحد فقط */}
-                {currentQ.answer_image ? (
-                  <img
-                    src={currentQ.answer_image}
-                    onClick={() => setZoomImg(currentQ.answer_image)}
-                    className="w-full h-40 md:h-56 object-contain mb-2 rounded cursor-pointer"
-                  />
-                ) : currentQ.audio ? (
-                  <audio controls className="w-full mb-2">
-                    <source src={currentQ.audio} />
-                  </audio>
-                ) : currentQ.video ? (
-                  <video controls className="w-full h-56 mb-2 rounded">
-                    <source src={currentQ.video} />
-                  </video>
-                ) : null}
+                {/* MEDIA (ANSWER) */}
+                {(currentQ?.answer_image || currentQ?.answer_video) && (
+                  <div className="flex justify-center items-center w-full h-[220px] md:h-[260px] bg-black/20 rounded-xl overflow-hidden mb-2">
+                    {currentQ?.answer_image && (
+                      <img
+                        src={currentQ.answer_image}
+                        onClick={() => setZoomImg(currentQ.answer_image)}
+                        className="w-full h-full object-contain cursor-pointer"
+                      />
+                    )}
 
-                <h2 className="mb-3">{currentQ.answer}</h2>
+                    {currentQ?.answer_video && (
+                      <video
+                        controls
+                        src={currentQ.answer_video}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
+                  </div>
+                )}
 
-                <div className="flex gap-2 justify-center">
+                {currentQ?.answer_audio && (
+                  <audio controls src={currentQ.answer_audio} />
+                )}
+
+                {/* ANSWER BOX */}
+                <div
+                  className="
+            mt-1 p-1
+            bg-gradient-to-r from-[#e6f7f1] to-[#dff5ec]
+            text-gray-800
+            rounded-2xl
+            border border-green-200
+            shadow-md
+            
+          "
+                >
+                  <h2 className="text-base md:text-lg font-bold leading-relaxed">
+                    {currentQ?.answer}
+                  </h2>
+                </div>
+                <p>مين جاوب؟</p>
+
+                {/* BUTTONS */}
+                <div className="flex gap-2 justify-center flex-wrap mt-4">
                   <button
                     onClick={() => handleAnswer(team1)}
-                    className="bg-purple-600 px-4 py-1 rounded"
+                    className="
+                px-4 py-2 rounded-xl font-semibold
+                bg-gradient-to-r from-[#ff7e5f] to-[#feb47b]
+                text-black
+                shadow-md
+                hover:scale-105 active:scale-95
+                transition
+              "
                   >
                     {team1}
                   </button>
 
                   <button
                     onClick={() => handleAnswer(team2)}
-                    className="bg-purple-600 px-4 py-1 rounded"
+                    className="
+                px-4 py-2 rounded-xl font-semibold
+                bg-gradient-to-r from-[#ff7e5f] to-[#feb47b]
+                                text-black
+
+                shadow-md
+                hover:scale-105 active:scale-95
+                transition
+              "
                   >
                     {team2}
                   </button>
+
+                  {/* NO ANSWER */}
                 </div>
+                <button
+                  onClick={handleNoAnswer}
+                  className="
+                px-4 py-2 rounded-xl font-semibold
+                bg-gradient-to-r from-[#ff7e5f] to-[#feb47b]
+                                text-black
+
+                shadow-md
+                hover:scale-105 active:scale-95
+                transition
+                margen
+                mt-5
+              "
+                >
+                  ما حدا جاوب
+                </button>
               </>
             )}
           </div>
         </div>
       )}
 
-      {/* باقي الكود بدون تغيير */}
+      {zoomImg && (
+        <div
+          className="fixed inset-0 bg-black/90 flex items-center justify-center z-[999]"
+          onClick={() => setZoomImg(null)}
+        >
+          <img
+            src={zoomImg}
+            className="max-w-[95%] max-h-[95%] rounded-xl shadow-[0_0_40px_rgba(168,85,247,0.6)] animate-[fadeIn_0.3s]"
+          />
+        </div>
+      )}
+
+      {/* 🏆 WINNER POPUP */}
+      {showWinner && (
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[100] p-4">
+          <div className="w-full max-w-2xl bg-[#1f1b3a]/80 backdrop-blur-xl p-6 md:p-8 rounded-3xl text-center shadow-[0_0_40px_rgba(168,85,247,0.4)] animate-[fadeIn_0.5s] question-card-land">
+            {/* TITLE */}
+            <h2 className="text-2xl md:text-3xl font-extrabold mb-6 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+              النتيجة النهائية
+            </h2>
+
+            {/* CHART */}
+            <div className="flex items-end justify-center gap-6 md:gap-10 h-48 mb-8">
+              {/* TEAM 1 */}
+              <div className="flex flex-col items-center w-1/2">
+                <div
+                  className="w-12 md:w-16 rounded-t-xl bg-gradient-to-t from-purple-600 to-pink-400 transition-all duration-500"
+                  style={{
+                    height: `${(score1 / Math.max(score1, score2, 1)) * 100}%`,
+                  }}
+                ></div>
+                <p className="mt-2 text-sm md:text-base">{team1}</p>
+                <span className="text-purple-300 font-bold">{score1}</span>
+              </div>
+
+              {/* TEAM 2 */}
+              <div className="flex flex-col items-center w-1/2">
+                <div
+                  className="w-12 md:w-16 rounded-t-xl bg-gradient-to-t from-indigo-600 to-blue-400 transition-all duration-500"
+                  style={{
+                    height: `${(score2 / Math.max(score1, score2, 1)) * 100}%`,
+                  }}
+                ></div>
+                <p className="mt-2 text-sm md:text-base">{team2}</p>
+                <span className="text-blue-300 font-bold">{score2}</span>
+              </div>
+            </div>
+
+            {/* WINNER */}
+            <div className="mb-6 text-xl md:text-2xl font-bold">
+              {score1 > score2 && (
+                <span className="text-purple-400 animate-[glow_1.5s_infinite]">
+                  🏆 {team1} الفائز
+                </span>
+              )}
+
+              {score2 > score1 && (
+                <span className="text-blue-400 animate-[glow_1.5s_infinite]">
+                  🏆 {team2} الفائز
+                </span>
+              )}
+
+              {score1 === score2 && (
+                <span className="text-gray-300">🤝 تعادل</span>
+              )}
+            </div>
+
+            {/* BUTTON */}
+            <button
+              onClick={() => navigate("/home")}
+              className="mt-2 w-full py-3 rounded-xl font-bold
+        bg-gradient-to-r from-purple-600 to-pink-500
+        hover:scale-[1.03] transition shadow-[0_0_20px_rgba(236,72,153,0.6)]"
+            >
+              الرجوع للرئيسية
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ANIMATIONS */}
+      <style>
+        {`
+        @keyframes fadeIn {
+          from {opacity:0; transform:scale(0.9);}
+          to {opacity:1; transform:scale(1);}
+        }
+
+        @keyframes pop {
+          0% {transform:scale(0.8); opacity:0;}
+          100% {transform:scale(1); opacity:1;}
+        }
+
+        @keyframes glow {
+          0% {text-shadow:0 0 5px #a855f7;}
+          50% {text-shadow:0 0 20px #a855f7;}
+          100% {text-shadow:0 0 5px #a855f7;}
+        }
+        `}
+      </style>
+      <div className="fixed bottom-0 w-full bg-black/70 p-3 flex justify-between">
+        <div className="flex flex-col items-center w-1/2">
+          <div>{team1}</div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setScore1(score1 - 100)}
+              className="bg-gradient-to-r from-[#C08552] to-[#8C5A3C] w-8 h-8 rounded-full"
+            >
+              -
+            </button>
+            <div className="px-4 ">{score1}</div>
+            <button
+              onClick={() => setScore1(score1 + 100)}
+              className="bg-gradient-to-r from-[#C08552] to-[#8C5A3C] w-8 h-8 rounded-full"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center w-1/2">
+          <div>{team2}</div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setScore2(score2 - 100)}
+              className="bg-gradient-to-r from-[#C08552] to-[#8C5A3C] w-8 h-8 rounded-full"
+            >
+              -
+            </button>
+            <div className="px-4">{score2}</div>
+            <button
+              onClick={() => setScore2(score2 + 100)}
+              className="bg-gradient-to-r from-[#C08552] to-[#8C5A3C] w-8 h-8 rounded-full"
+            >
+              +
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

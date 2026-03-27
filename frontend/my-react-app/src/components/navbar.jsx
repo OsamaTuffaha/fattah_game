@@ -1,5 +1,6 @@
 import { setLogout } from "./features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import MIND from "../assets/MIND.png"
 
 function Navbar() {
   const dispatch = useDispatch();
@@ -11,8 +12,8 @@ function Navbar() {
     }
   }
   return (
-    <div className="bg-gray-900 text-white px-6 py-4 flex justify-between items-center">
-      <h1 className="text-xl font-bold">فَتِّح مُخَّك</h1>
+    <div className="bg-[#280905] text-white px-6 py-4 flex justify-between items-center">
+      <img src={MIND} alt="logo" className="h-10 md:h-12 w-auto object-contain" />
 
       <div className="space-x-4">
         <a href="/home" className="hover:text-gray-300">

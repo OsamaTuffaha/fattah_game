@@ -1,0 +1,53 @@
+/* 🔥 MOBILE ONLY (<410px) */
+@media (max-width: 410px) {
+
+  .question-modal {
+    height: 100vh !important;
+    padding: 10px !important;
+  }
+
+  .question-card {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+
+  .question-media {
+    height: 180px !important;
+  }
+
+  .question-text {
+    font-size: 14px !important;
+    padding: 10px !important;
+  }
+
+  .question-buttons button {
+    width: 100% !important;
+    font-size: 14px !important;
+    padding: 8px !important;
+  }
+  .margen{
+margin-top: 10px;
+  }
+
+}
+
+@media (min-width: 700px) and (max-width: 900px) {
+    .question-modal_land {
+    height: 100% !important;
+    padding: 10px !important;
+  }
+  .question-card-land {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+  .asnwer-size{
+height: 20px;
+  }
+  
+}

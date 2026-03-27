@@ -63,8 +63,8 @@ const AddQuestion = () => {
       category_id: "",
     });
 
-    setImage(null);
-    setAnswerImage(null);
+    // setImage(null);
+    // setAnswerImage(null);
     setAudio(null);
     setVideo(null);
     setAnswerVideo(null);
